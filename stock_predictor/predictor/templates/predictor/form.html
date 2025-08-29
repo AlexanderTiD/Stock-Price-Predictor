@@ -1,0 +1,5 @@
+<form method="post">
+    {% csrf_token %}
+    <input type="text" name="ticker" placeholder="Введите тикер (например, AAPL)" required>
+    <button type="submit">Предсказать</button>
+</form>
