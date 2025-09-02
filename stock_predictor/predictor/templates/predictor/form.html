@@ -1,5 +1,42 @@
-<form method="post">
-    {% csrf_token %}
-    <input type="text" name="ticker" placeholder="Введите тикер (например, AAPL)" required>
-    <button type="submit">Предсказать</button>
-</form>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Predictor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3>📈 Stock Price Predictor</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="tickerInput" class="form-label">Введите тикер акции:</label>
+                                <input type="text" class="form-control" id="tickerInput" name="ticker"
+                                       placeholder="Например: AAPL, MSFT, etc." required>
+                                <div class="form-text">Используйте американские тикеры (AAPL, MSFT, etc.)</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">🚀 Предсказать цену</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelector('form').addEventListener('submit', function() {
+            const button = this.querySelector('button[type="submit"]');
+            button.innerHTML = '⏳ Загрузка...';
+            button.disabled = true;
+        });
+    </script>
+</body>
+</html>

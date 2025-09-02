@@ -1,19 +1,35 @@
-import numpy as np
 from django.shortcuts import render
-from stock_predictor.backend.api import get_stock_data, train_model
+from .services import create_prediction_plot, get_stock_data, moving_average
 
 
 def predict_view(request):
     if request.method == 'POST':
-        ticker = request.POST.get('ticker', 'AAPL')
-        prices = get_stock_data(ticker, '2020-01-01', '2023-01-01')
-        days = np.arange(len(prices)).reshape(-1, 1)
-        model = train_model(days, prices)
-        future_price = model.predict(np.array([[len(prices) + 30]]))[0][0]
+        ticker = request.POST.get('ticker', 'AAPL').upper()
 
-        return render(request, 'predictor/result.html', {
-            'ticker': ticker,
-            'future_price': round(future_price, 2)
-        })
+        try:
+            # Получаем данные
+            prices, dates = get_stock_data(ticker)
 
+            if len(prices) < 30:
+                return render(request, 'predictor/error.html', {
+                    'error': f'Недостаточно данных для акции {ticker}'})
+
+            # Прогноз
+            current_price = float(prices[-1][0])
+            future_price = moving_average(prices, method='moving_average')
+
+            # Создаем график
+            plot_url = create_prediction_plot(ticker, prices, dates, future_price, 'moving_average')
+
+            return render(request, 'predictor/result.html', {
+                'ticker': ticker,
+                'current_price': round(current_price, 2),
+                'future_price': round(future_price, 2),
+                'plot_url': plot_url,
+                'historical_data_points': len(prices),
+                'first_date': f'{dates[0].strftime("%Y-%m-%d")}',
+                'last_date':  f'{dates[-1].strftime("%Y-%m-%d")}'})
+
+        except Exception as e:
+            return render(request, 'predictor/error.html', {'error': f'Ошибка: {str(e)}'})
     return render(request, 'predictor/form.html')
