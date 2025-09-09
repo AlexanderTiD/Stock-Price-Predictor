@@ -1,15 +1,8 @@
-"""
-ASGI config for stock_predictor project.
-
-It exposes the ASGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
-"""
-
 import os
-
 from django.core.asgi import get_asgi_application
+
+# Настройка ASGI для проекта stock_predictor
+# ASGI (Asynchronous Server Gateway Interface) используется для асинхронных серверов типа Daphne или Uvicorn
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'stock_predictor.settings')
 

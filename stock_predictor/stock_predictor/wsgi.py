@@ -1,15 +1,8 @@
-"""
-WSGI config for stock_predictor project.
-
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.2/howto/deployment/wsgi/
-"""
-
 import os
-
 from django.core.wsgi import get_wsgi_application
+
+# Настройка WSGI для проекта stock_predictor
+# WSGI (Web Server Gateway Interface) используется для традиционных синхронных серверов типа Gunicorn
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'stock_predictor.settings')
 

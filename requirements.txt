@@ -1,5 +1,6 @@
 django
 pandas
 yfinance
+mplfinance
 matplotlib
 scikit-learn

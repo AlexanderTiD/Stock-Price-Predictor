@@ -1,8 +1,12 @@
-#!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
 import os
 import sys
 
+
+# Утилита командной строки для управления Django-проектом
+# Позволяет выполнять команды:
+# - python manage.py runserver (запуск сервера)
+# - python manage.py migrate (миграции базы данных)
+# - python manage.py createsuperuser (создание администратора)
 
 def main():
     """Run administrative tasks."""
