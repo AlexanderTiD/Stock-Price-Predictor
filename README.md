@@ -171,7 +171,7 @@
 ```
 
 - ### Пример Графика
-  ![Alt Text](./media/plots/plot.png)
+  ![Alt Text](./stock_predictor/media/plots/plot.png)
 
 
 ## 📈 Метрики качества
