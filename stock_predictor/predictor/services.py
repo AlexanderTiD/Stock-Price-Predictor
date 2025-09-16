@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from sklearn.linear_model import LinearRegression
 
 
-def get_stock_data(ticker, years=5):
+def get_stock_data(ticker, years=1):
     """
     Получает исторические данные по акциям для заданного тикера.
 
@@ -100,7 +100,13 @@ def create_prediction_plot(ticker, historical_prices, historical_dates, future_p
     """
     # Настройка стиля
     plt.style.use('dark_background')
-    fig, ax = plt.subplots(figsize=(14, 8))
+
+    # Создаем фигуру с двумя subplots: основной график и информационная панель
+    fig = plt.figure(figsize=(16, 8), facecolor='#121212')
+    gs = plt.GridSpec(1, 2, width_ratios=[3, 1], wspace=0.05)
+
+    # Основной график
+    ax = fig.add_subplot(gs[0])
 
     # Основной график цен
     ax.plot(historical_dates, historical_prices.flatten(),
@@ -147,48 +153,69 @@ def create_prediction_plot(ticker, historical_prices, historical_dates, future_p
     # Заголовок и подписи
     ax.set_title(f'{ticker} - Текущая: ${last_price:.2f} | Прогноз: ${future_price:.2f}',
                  fontsize=16, fontweight='bold', pad=20, color='white')
-
     ax.set_xlabel('Дата', fontsize=12, color='#BDBDBD', labelpad=10)
     ax.set_ylabel('Цена ($)', fontsize=12, color='#BDBDBD', labelpad=10)
+
+    # Информационная панель (правая часть)
+    ax_info = fig.add_subplot(gs[1])
+    ax_info.axis('off')  # Скрываем оси
 
     # Расчет изменения цены
     change_percent = ((future_price - last_price) / last_price * 100)
     change_color = '#00E676' if change_percent >= 0 else '#FF5252'
 
-    # Единая информационная панель с легендой и статистикой
-    info_text = f'''📊 {ticker} - АНАЛИЗ
-    💰 ЦЕНЫ:
+    # Основной текст без форматирования
+    info_text = f'''
+
     ┣ Текущая: ${last_price:.2f}
     ┣ Прогноз: ${future_price:.2f}
-    ┗ Изменение: <span style="color:{change_color}">{change_percent:+.2f}%</span>
+    ┗ Изменение: 
 
-    📈 ДАННЫЕ:
+
     ┣ Период: {len(historical_prices)} дней
     ┣ Начало: {historical_dates[0].strftime("%d.%m.%Y")}
     ┗ Конец: {historical_dates[-1].strftime("%d.%m.%Y")}
 
-    🔧 МЕТОД:
+
     ┗ {method_used}
 
-    📋 ЛЕГЕНДА:
-    ┣ Синяя линия - Исторические данные
-    ┣ Зеленая точка - Текущая цена
-    ┗ Оранжевая точка - Прогноз на 30 дней'''
 
-    # Автоматическое позиционирование - находим свободное место
-    x_range = ax.get_xlim()
-    y_range = ax.get_ylim()
-    chart_width = x_range[1] - x_range[0]
-    chart_height = y_range[1] - y_range[0]
+    ┣   - Исторические данные
+    ┣   - Текущая цена
+    ┗   - Прогноз на 30 дней'''
 
-    # Позиционируем в левом верхнем углу графика (не экрана)
-    info_x = x_range[0] + chart_width * 0.02  # 2% от левого края
-    info_y = y_range[1] - chart_height * 0.05  # 5% от верхнего края
+    # Создаем основной текст
+    font_size = 10
+    ax_info.text(0.02, 0.95, info_text, transform=ax_info.transAxes,
+                 bbox=dict(boxstyle='round', facecolor='#424242', alpha=0.9, edgecolor='#757575', pad=1),
+                 fontfamily='monospace', color='white', fontsize=font_size, verticalalignment='top', linespacing=1.4)
 
-    # Информационная панель
-    ax.text(info_x, info_y, info_text, bbox=dict(boxstyle='round', facecolor='#424242',
-                      alpha=0.9, edgecolor='#757575', pad=1), fontfamily='monospace', color='white', fontsize=10,
-            verticalalignment='top', linespacing=1.4)
+    # Добавляем заголовки
+    ax_info.text(0.02, 0.935, f"{ticker} - АНАЛИЗ", transform=ax_info.transAxes,
+                 fontfamily='monospace', color='white', fontsize=font_size, fontweight='bold')
+    ax_info.text(0.04, 0.90, "ЦЕНА:", transform=ax_info.transAxes,
+                 fontfamily='monospace', color='white', fontsize=font_size, fontweight='bold')
+    ax_info.text(0.04, 0.74, "ДАННЫЕ:", transform=ax_info.transAxes,
+                 fontfamily='monospace', color='white', fontsize=font_size, fontweight='bold')
+    ax_info.text(0.04, 0.58, "МЕТОД:", transform=ax_info.transAxes,
+                 fontfamily='monospace', color='white', fontsize=font_size, fontweight='bold')
+    ax_info.text(0.04, 0.48, "ЛЕГЕНДА:", transform=ax_info.transAxes,
+                 fontfamily='monospace', color='white', fontsize=font_size, fontweight='bold')
+
+    # Цветной процент изменения
+    ax_info.text(0.46, 0.8, f'{change_percent:+.2f}%', transform=ax_info.transAxes,
+                 color=change_color, fontfamily='monospace', fontsize=font_size, fontweight='bold')
+
+    # Синяя линия для исторических данных
+    ax_info.plot([0.22, 0.18], [0.455, 0.455], transform=ax_info.transAxes, color='#2962FF', linewidth=3, zorder=10)
+
+    # Зеленая точка для текущей цены
+    ax_info.scatter(0.2, 0.42, transform=ax_info.transAxes, color='#00E676', s=50, edgecolors='white', linewidth=1,
+                    zorder=10)
+
+    # Оранжевая точка для прогноза
+    ax_info.scatter(0.2, 0.385, transform=ax_info.transAxes, color='#FF6D00', s=50, edgecolors='white', linewidth=1,
+                    zorder=10)
 
     # Настройка layout
     plt.tight_layout()
